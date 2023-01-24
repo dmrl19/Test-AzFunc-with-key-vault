@@ -1,25 +1,8 @@
-using System;
-using System.Linq;
-using NuGet.Common;
 using Nuke.Common;
-using Nuke.Common.CI;
 using Nuke.Common.CI.GitHubActions;
-using Nuke.Common.Execution;
-using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
-using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
-using Nuke.Common.Utilities.Collections;
-using Serilog;
-using static Nuke.Common.EnvironmentInfo;
-using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.IO.PathConstruction;
 
-[GitHubActions(
-    "CI Build Pipeline",
-    GitHubActionsImage.UbuntuLatest,
-    On = new[] { GitHubActionsTrigger.PullRequest },
-    InvokedTargets = new[] { nameof(Compile) })]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
@@ -43,6 +26,7 @@ class Build : NukeBuild
         });
 
     Target Restore => _ => _
+        // .DependsOn(Clean)
         .Executes(() =>
         {
             DotNetTasks.DotNetRestore(s=>s.SetProjectFile(Solution));
