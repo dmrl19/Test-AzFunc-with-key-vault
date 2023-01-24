@@ -7,6 +7,7 @@ using Nuke.Common.Tools.DotNet;
     "CI Build Pipeline",
     GitHubActionsImage.UbuntuLatest,
     On = new[] { GitHubActionsTrigger.PullRequest },
+    
     InvokedTargets = new[] { nameof(Compile) })]
 class Build : NukeBuild
 {
