@@ -37,4 +37,4 @@ jobs:
       - name: pwd
         run: pwd
       - name: Run './build.cmd Compile'
-        run: ./src/AzFunctionsWithKeyVault/build/build.cmd Compile
+        run: ./src/AzFunctionsWithKeyVault/build.cmd Compile
