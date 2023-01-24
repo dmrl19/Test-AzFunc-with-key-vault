@@ -3,12 +3,6 @@ using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
 
-[GitHubActions(
-    "CI Build Pipeline",
-    GitHubActionsImage.UbuntuLatest,
-    On = new[] { GitHubActionsTrigger.PullRequest },
-    
-    InvokedTargets = new[] { nameof(Compile) })]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
@@ -32,7 +26,7 @@ class Build : NukeBuild
         });
 
     Target Restore => _ => _
-        .DependsOn(Clean)
+        // .DependsOn(Clean)
         .Executes(() =>
         {
             DotNetTasks.DotNetRestore(s=>s.SetProjectFile(Solution));
