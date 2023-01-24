@@ -16,9 +16,8 @@
 
 name: CI_Build_Pipeline
 
-on: 
-    workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
-
+# workflow_dispatch:  Allows you to run this workflow manually from the Actions tab
+on: [workflow_dispatch,pull_request]
 
 jobs:
   ubuntu-latest:
