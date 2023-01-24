@@ -31,5 +31,9 @@ jobs:
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
+      - name: test
+        run: ls
+      - name: pwd
+        run: pwd
       - name: Run './build.cmd Compile'
         run: ./src/AzFunctionsWithKeyVault/build/build.cmd Compile
