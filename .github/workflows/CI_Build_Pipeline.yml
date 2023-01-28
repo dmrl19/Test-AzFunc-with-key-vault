@@ -11,13 +11,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  Merge_Build:
+  on_merged_build:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-    - run: |
-        echo The PR was merged
-
     - uses: actions/checkout@v3
 
     - name: Setup .NET Core SDK
@@ -25,9 +22,25 @@ jobs:
 
     - name: Execute Nuke
       working-directory: 'src/AzFunctionsWithKeyVault/build'
-      run:  dotnet run -target Pack
+      run:  dotnet run -target Pack --ShouldSkipTests true
 
-  PullRequest_Build:
+  pulumi_preview:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install Pulumi CLI
+      uses: pulumi/setup-pulumi@v2
+
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v3.0.3
+
+    - name: Execute Nuke
+      working-directory: 'src/AzFunctionsWithKeyVault/Infrastructure/Base/Nuke'
+      run:  dotnet run -target Pack --ShouldSkipTests true
+
+  on_pull_request:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -38,4 +51,4 @@ jobs:
 
       - name: Execute Nuke
         working-directory: 'src/AzFunctionsWithKeyVault/build'
-        run:  dotnet run -target Tests
+        run:  dotnet run -target Tests 

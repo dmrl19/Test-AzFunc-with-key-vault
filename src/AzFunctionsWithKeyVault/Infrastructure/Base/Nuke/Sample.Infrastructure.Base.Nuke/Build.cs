@@ -16,6 +16,7 @@ public class Build : NukeBuild
         
     [Parameter] private readonly string PULUMI_STATE_STORAGE_ACCOUNT_NAME = default!;
     [Parameter] private readonly string PULUMI_STATE_STORAGE_KEY = default!;
+    [Parameter] private readonly string PULUMI_PASSPHRASE = default!;
     [Parameter] private readonly string STAGE = default!;
 
     private string PulumiStackName => $"base-{STAGE}";
@@ -23,27 +24,18 @@ public class Build : NukeBuild
         .Triggers(PulumiLogin)
         .Requires(() => PULUMI_STATE_STORAGE_ACCOUNT_NAME)
         .Requires(() => PULUMI_STATE_STORAGE_KEY)
+        .Requires(() => PULUMI_PASSPHRASE)
         .Executes(() =>
         {
-            
-            Log.Information($"Branch {CurrentPulumiPath}");
             Environment.SetEnvironmentVariable("AZURE_STORAGE_ACCOUNT", PULUMI_STATE_STORAGE_ACCOUNT_NAME);//"stpulumistatedmr");
             Environment.SetEnvironmentVariable("AZURE_STORAGE_KEY", PULUMI_STATE_STORAGE_KEY);
-            Environment.SetEnvironmentVariable("PULUMI_CONFIG_PASSPHRASE", "passphrase!");
+            Environment.SetEnvironmentVariable("PULUMI_CONFIG_PASSPHRASE", PULUMI_PASSPHRASE);
         });
 
     Target PulumiLogin => _ => _
         .DependsOn(SetupPulumiVars)
         .Triggers(InitStack)
         .Executes(() => { PulumiTasks.Pulumi("login azblob://state"); });
-
-
-    bool VerifyIfStackNameExist()
-    {
-        var result = PulumiTasks.Pulumi("stack ls", CurrentPulumiPath);
-        
-        return result.StdToText().Contains(PulumiStackName);
-    }
 
     Target InitStack => _ => _
         .DependsOn(PulumiLogin)
@@ -97,5 +89,10 @@ public class Build : NukeBuild
         {
             Log.Warning("TODO destroy :)");
         });
-
+    
+    private bool VerifyIfStackNameExist()
+    {
+        var result = PulumiTasks.Pulumi("stack ls", CurrentPulumiPath);
+        return result.StdToText().Contains(PulumiStackName);
+    }
 }

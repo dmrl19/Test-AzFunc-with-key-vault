@@ -17,6 +17,8 @@ class Build : NukeBuild
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
+    [Parameter] readonly bool ShouldSkipTests = false;
+    
     Target Clean => _ => _
         .Before(Restore)
         .Executes(() =>
@@ -40,6 +42,7 @@ class Build : NukeBuild
 
     Target Tests => _ => _
         .DependsOn(Compile)
+        .OnlyWhenDynamic(() => !ShouldSkipTests)
         .Executes(() =>
         {
             DotNetTasks.DotNetTest(s => s.SetProjectFile(Solution));
