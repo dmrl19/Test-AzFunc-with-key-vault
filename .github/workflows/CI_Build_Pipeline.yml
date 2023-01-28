@@ -11,8 +11,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  if_merged:
-    if: github.event.pull_request.merged == true
+  Merge_Build:
+    if: github.event_name == 'main'
     runs-on: ubuntu-latest
     steps:
     - run: |
@@ -27,7 +27,7 @@ jobs:
       working-directory: 'src/AzFunctionsWithKeyVault/build'
       run:  dotnet run -target Pack
 
-  ubuntu-latest:
+  PullRequest_Build:
     name: ubuntu-latest
     runs-on: ubuntu-latest
     steps:
