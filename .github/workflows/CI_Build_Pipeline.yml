@@ -15,4 +15,4 @@ jobs:
 
       - name: Execute Nuke
         working-directory: 'src/AzFunctionsWithKeyVault/build'
-        run: dotnet run Compile
+        run:  dotnet run -target Tests
