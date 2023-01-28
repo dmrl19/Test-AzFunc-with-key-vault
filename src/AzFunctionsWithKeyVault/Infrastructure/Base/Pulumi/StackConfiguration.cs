@@ -1,6 +1,6 @@
 using Pulumi;
 
-namespace Sample.Infrastructure.Base;
+namespace Sample.Infrastructure.Base.Pulumi;
 
 public  class StackConfiguration
 {
@@ -12,4 +12,5 @@ public  class StackConfiguration
     }
 
     public string Stage => _stackConfig.Require("stage");
+    public string Location => _stackConfig.Require("location");
 }

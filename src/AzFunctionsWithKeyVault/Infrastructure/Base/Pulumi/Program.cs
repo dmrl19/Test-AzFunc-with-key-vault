@@ -1,7 +1,7 @@
 ﻿using Pulumi;
 using System.Threading.Tasks;
+using Sample.Infrastructure.Base.Pulumi;
 
-namespace Sample.Infrastructure.Base;
 
 public class Program
 {

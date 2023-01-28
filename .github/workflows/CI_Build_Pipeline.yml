@@ -1,9 +1,32 @@
 name: CI_Build_Pipeline
 
 # workflow_dispatch:  Allows you to run this workflow manually from the Actions tab
-on: [workflow_dispatch,pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
+  if_merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+    - run: |
+        echo The PR was merged
+
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v3.0.3
+
+    - name: Execute Nuke
+      working-directory: 'src/AzFunctionsWithKeyVault/build'
+      run:  dotnet run -target Pack
+
   ubuntu-latest:
     name: ubuntu-latest
     runs-on: ubuntu-latest
@@ -15,4 +38,4 @@ jobs:
 
       - name: Execute Nuke
         working-directory: 'src/AzFunctionsWithKeyVault/build'
-        run: dotnet run Compile
+        run:  dotnet run -target Tests

@@ -1,5 +1,4 @@
 using Nuke.Common;
-using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
 
@@ -26,15 +25,14 @@ class Build : NukeBuild
         });
 
     Target Restore => _ => _
-        // .DependsOn(Clean)
         .Executes(() =>
-        {
+        { 
             DotNetTasks.DotNetRestore(s=>s.SetProjectFile(Solution));
         });
 
     Target Compile => _ => _
         .DependsOn(Restore)
-        .Triggers(Tests)
+        .Triggers(new []{Tests})
         .Executes(() =>
         {
             DotNetTasks.DotNetBuild(s=>s.SetProjectFile(Solution));
@@ -45,5 +43,19 @@ class Build : NukeBuild
         .Executes(() =>
         {
             DotNetTasks.DotNetTest(s => s.SetProjectFile(Solution));
+        });
+
+    Target Pack => _ => _
+        .DependsOn(Compile)
+        .After(Compile)
+        .Executes(() =>
+        {
+            var projectPath = RootDirectory / "Services" / "ServiceOne.FunctionApp";
+            var settings = new DotNetPublishSettings()
+                .SetProject(projectPath)
+                .SetConfiguration(Configuration)
+                .SetOutput(RootDirectory / "output");
+            
+            DotNetTasks.DotNetPublish(settings);
         });
 }
