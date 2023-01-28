@@ -40,7 +40,7 @@ jobs:
 
     - name: Execute Nuke
       working-directory: 'src/AzFunctionsWithKeyVault/Infrastructure/Base/Nuke/Sample.Infrastructure.Base.Nuke'
-      run:  dotnet run -target Preview --PULUMI_STATE_STORAGE_ACCOUNT_NAME ${{ secrets.PULUMI_STATE_STORAGE_ACCOUNT_NAME }} --PULUMI_STATE_STORAGE_KEY ${{ secrets.PULUMI_STATE_STORAGE_KEY }} --STAGE ${{env.STAGE}} --PULUMI_PASSPHRASE ${{ secrets.PULUMI_PASSPHRASE}}
+      run:  dotnet run -target Preview --PULUMI_STATE_STORAGE_ACCOUNT_NAME ${{ secrets.PULUMI_STATE_STORAGE_ACCOUNT_NAME }} --PULUMI_STATE_STORAGE_KEY ${{ secrets.PULUMI_STATE_STORAGE_KEY }} --STAGE ${{vars.STAGE}} --PULUMI_PASSPHRASE ${{ secrets.PULUMI_PASSPHRASE}}
 
 
   on_pull_request:
