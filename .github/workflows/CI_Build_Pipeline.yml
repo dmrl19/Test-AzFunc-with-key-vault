@@ -1,7 +1,10 @@
 name: CI_Build_Pipeline
 
 # workflow_dispatch:  Allows you to run this workflow manually from the Actions tab
-on: [workflow_dispatch,pull_request, main]
+on: [workflow_dispatch,pull_request]
+  push:
+    branches:
+      - main
 
 
 jobs:
@@ -20,7 +23,7 @@ jobs:
     - name: Execute Nuke
       working-directory: 'src/AzFunctionsWithKeyVault/build'
       run:  dotnet run -target Pack
-      
+
   ubuntu-latest:
     name: ubuntu-latest
     runs-on: ubuntu-latest
