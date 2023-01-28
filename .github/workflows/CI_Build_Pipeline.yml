@@ -12,7 +12,7 @@ on:
 
 jobs:
   Merge_Build:
-    if: github.event_name == 'main'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
     - run: |
@@ -28,7 +28,7 @@ jobs:
       run:  dotnet run -target Pack
 
   PullRequest_Build:
-    name: ubuntu-latest
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
