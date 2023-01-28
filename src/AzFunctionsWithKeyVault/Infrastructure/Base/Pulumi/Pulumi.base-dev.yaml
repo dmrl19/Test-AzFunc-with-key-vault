@@ -1,0 +1,5 @@
+encryptionsalt: v1:BDy202KoeCQ=:v1:tTO6bBd71sN/ovP9:NumqjpL6C3eN5maVu0Ejyt1t2Z/oFQ==
+config:
+  azure-native:location: WestEurope
+  Sample.Infrastructure.Base.Pulumi:stage: dev
+  Sample.Infrastructure.Base.Pulumi:location: WestEurope

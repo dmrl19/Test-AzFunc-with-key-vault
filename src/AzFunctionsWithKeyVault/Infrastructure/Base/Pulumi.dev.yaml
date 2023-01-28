@@ -1,4 +1,0 @@
-encryptionsalt: v1:Pnx2bTnDyOI=:v1:JrSkw3aUuQXVMIWA:ztNPL9jn79BHyq1g2RftuvkTiQwN4A==
-config:
-  azure-native:location: WestEurope
-  Sample.Infrastructure.Base:stage: dev

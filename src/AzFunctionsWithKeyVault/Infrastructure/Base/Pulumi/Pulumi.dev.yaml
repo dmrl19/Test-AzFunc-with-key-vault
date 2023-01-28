@@ -1,0 +1,6 @@
+encryptionsalt: v1:WPFts8jZDUQ=:v1:lQyy3QwE8RLDy/Pk:bUMC9/lltEciBotnYnkRzClTkxZ2hw==
+config:
+  azure-native:location: WestEurope
+  Sample.Infrastructure.Base.Pulumi:stage: dev
+  Sample.Infrastructure.Base.Pulumi:pulumiStorageAccount: stpulumistatedmr
+  

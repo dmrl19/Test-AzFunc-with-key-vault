@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>exe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <NukeTelemetryVersion>1</NukeTelemetryVersion>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="Nuke.Common" Version="6.3.0" />
+    </ItemGroup>
+</Project>
