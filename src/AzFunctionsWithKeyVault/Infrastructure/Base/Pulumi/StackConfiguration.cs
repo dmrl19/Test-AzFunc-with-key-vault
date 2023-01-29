@@ -13,4 +13,6 @@ public  class StackConfiguration
 
     public string Stage => _stackConfig.Require("stage");
     public string Location => _stackConfig.Require("location");
+    public string KeyVaultResourceGroupName => _stackConfig.Require("keyVaultResourceGroupName");
+    public string KeyVaultName => _stackConfig.Require("keyVaultName");
 }

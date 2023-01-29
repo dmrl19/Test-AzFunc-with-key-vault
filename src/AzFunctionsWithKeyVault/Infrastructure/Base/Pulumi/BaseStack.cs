@@ -1,51 +1,43 @@
+using System.Text.Json;
 using Pulumi;
 using Pulumi.AzureNative.AppConfiguration;
 using Pulumi.AzureNative.KeyVault;
 using Pulumi.AzureNative.KeyVault.Inputs;
 using Pulumi.AzureNative.Resources;
-using Pulumi.AzureNative.Web;
-using Pulumi.AzureNative.Web.Inputs;
+using Sample.Infrastructure.Base.Pulumi.Models;
 using AzureNative = Pulumi.AzureNative;
 
 namespace Sample.Infrastructure.Base.Pulumi;
 
 public class BaseStack : Stack
 {
+    [Output] public Output<string> ResourceGroupName { get; set; }
+    [Output] public Output<string> AppConfigurationEndpoint { get; set; }
+    
     public BaseStack()
     {
         _config = new StackConfiguration();
-//TODO: Refactor
+
         var resourceGroup = new ResourceGroup($"ResourceGroup", new ResourceGroupArgs()
         {
-            ResourceGroupName = $"rg-dmr-base-{_config.Stage}",
+            ResourceGroupName = $"rg-dmr-{_config.Stage}",
             Location = _config.Location,
         });
-
-        var keyVaultResourceGroup = "rg-kv-dmr-sample-dev";
-        var keyVaultName = "kv-dmr-sample-dev";
         
-        // CreateAzureFunction(resourceGroup);
-
-
-        var secretOne = CreateKeyVaultSecret(keyVaultResourceGroup, keyVaultName, "Super-Secret-Name-One", "Value One");
-        CreateKeyVaultSecret(keyVaultResourceGroup, keyVaultName, "Super-Secret-Name-Two", "Value Two");
-        CreateKeyVaultSecret(keyVaultResourceGroup, keyVaultName, "Super-Secret-Name-Three", "Value Three");
-        CreateKeyVaultSecret(keyVaultResourceGroup, keyVaultName, "Super-Secret-Name-Four", "Value Four");
-
-        Log.Info("===============");
-        var a = secretOne.Properties.Apply(d =>
-        {
-            // Needs to be formed like "@Microsoft.KeyVault([SecretUri])"
-            // https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references?tabs=azure-cli#reference-syntax
-            return $"@Microsoft.KeyVault({d.SecretUri})";
-        });Log.Info("===============");
+        ResourceGroupName = resourceGroup.Name;
         
-        
-         var appConfiguration = CreateAppConfiguration(resourceGroup);
-         CreateKeyVaultReferenceInAppConfiguration(resourceGroup, appConfiguration, "KeyVaultRef", a);
-         // CreateAppConfigurationKeyValue(resourceGroup, appConfiguration, "App-Key-One", "App-Config-One");
-         // CreateAppConfigurationKeyValue(resourceGroup, appConfiguration, "App-Key-Two", "App-Config-Two");
-         // CreateAppConfigurationKeyValue(resourceGroup, appConfiguration, "App-Key-Three", "App-Config-Three");
+        var secretOne = CreateKeyVaultSecret(_config.KeyVaultResourceGroupName, _config.KeyVaultName, "Super-Secret-Name-One", "Value One");
+        CreateKeyVaultSecret(_config.KeyVaultResourceGroupName, _config.KeyVaultName, "Super-Secret-Name-Two", "Value Two");
+        CreateKeyVaultSecret(_config.KeyVaultResourceGroupName, _config.KeyVaultName, "Super-Secret-Name-Three", "Value Three");
+        CreateKeyVaultSecret(_config.KeyVaultResourceGroupName, _config.KeyVaultName, "Super-Secret-Name-Four", "Value Four");
+
+        var appConfiguration = CreateAppConfiguration(resourceGroup);
+        CreateKeyVaultReferenceInAppConfiguration(resourceGroup, appConfiguration, "KeyVaultRef", secretOne);
+        CreateAppConfigurationKeyValue(resourceGroup, appConfiguration, "App-Key-One", "App-Config-One");
+        CreateAppConfigurationKeyValue(resourceGroup, appConfiguration, "App-Key-Two", "App-Config-Two");
+        CreateAppConfigurationKeyValue(resourceGroup, appConfiguration, "App-Key-Three", "App-Config-Three");
+
+        AppConfigurationEndpoint = appConfiguration.Endpoint;
     }
 
     private readonly StackConfiguration _config;
@@ -66,60 +58,20 @@ public class BaseStack : Stack
         });
     }
 
-    private static AppServicePlan CreateAppServicePlan(ResourceGroup resourceGroup)
-    {
-        return new AppServicePlan("azureServicePlan", new AppServicePlanArgs()
-        {
-            ResourceGroupName = resourceGroup.Name,
-            Location = resourceGroup.Location,
-            Name = "app-plan-func-dmr",
-            Sku = new AzureNative.Web.Inputs.SkuDescriptionArgs
-            {
-                Capacity = 1,
-                Family = "B1",
-                Name = "B1",
-                Size = "B1",
-                Tier = "Basic",
-            }
-        });
-    }
-
-    private void CreateAzureFunction(ResourceGroup resourceGroup)
-    {
-        var storageAccount = CreateStorageAccount(resourceGroup);
-        var servicePlan = CreateAppServicePlan(resourceGroup);
-
-        new WebApp("FunctionApp", new WebAppArgs()
-        {
-            ResourceGroupName = resourceGroup.Name,
-            Location = resourceGroup.Location,
-            Name = "az-func-dmr",
-            Kind = "functionapp",
-            ServerFarmId = servicePlan.Id,
-            SiteConfig = new SiteConfigArgs()
-            {
-                AppSettings = new[]
-                {
-                    new NameValuePairArgs() { Name = "AzureWebJobsStorage", Value = storageAccount.Name }
-                }
-            }
-        });
-    }
-
     private ConfigurationStore CreateAppConfiguration(ResourceGroup resourceGroup) =>
-        new ConfigurationStore("appConfiguration",new ConfigurationStoreArgs()
-    {
-        ResourceGroupName = resourceGroup.Name,
-        Sku = new AzureNative.AppConfiguration.Inputs.SkuArgs
+        new("appConfiguration", new ConfigurationStoreArgs()
         {
-            Name = "Standard",
-        },
-        Location = resourceGroup.Location,
-        ConfigStoreName =  "app-conf-dmr-sample-dev"
-    });
+            ResourceGroupName = resourceGroup.Name,
+            Sku = new AzureNative.AppConfiguration.Inputs.SkuArgs
+            {
+                Name = "Standard",
+            },
+            Location = resourceGroup.Location,
+            ConfigStoreName = $"appconfdmr{_config.Stage}"
+        });
 
     private Secret CreateKeyVaultSecret(string rgVaultName, string vaultName, string secretName, string value)
-        => new Secret($"keyvaultSecret-{secretName}", new SecretArgs()
+        => new Secret($"keyVaultSecret-{secretName}", new SecretArgs()
         {
             ResourceGroupName = rgVaultName,
             VaultName = vaultName,
@@ -130,10 +82,10 @@ public class BaseStack : Stack
             }
         });
 
-    private KeyValue CreateAppConfigurationKeyValue(ResourceGroup resourceGroup, ConfigurationStore configurationStore,
+    private void CreateAppConfigurationKeyValue(ResourceGroup resourceGroup, ConfigurationStore configurationStore,
         string keyName, string keyValue)
     {
-        return new KeyValue($"AppConfigurationKeyValue-{keyName}", new()
+        _ = new KeyValue($"AppConfigurationKeyValue-{keyName}", new()
         {
             ConfigStoreName = configurationStore.Name,
             KeyValueName = keyName,
@@ -142,15 +94,20 @@ public class BaseStack : Stack
         });
     }
 
-    private KeyValue CreateKeyVaultReferenceInAppConfiguration(ResourceGroup resourceGroup,
-        ConfigurationStore configurationStore, string keyName, Output<string> a)
-    =>new KeyValue($"AppConfigurationKeyValue-{keyName}", new()
+    private void CreateKeyVaultReferenceInAppConfiguration(ResourceGroup resourceGroup,
+        ConfigurationStore configurationStore, string keyName, Secret secret) //Output<string> a)
     {
-        ConfigStoreName = configurationStore.Name,
-        KeyValueName = keyName,
-        ResourceGroupName = resourceGroup.Name,
-        ContentType =  "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8",
-        Value = a
-    });
-    
+        _ = new KeyValue($"AppConfigurationKeyValue-{keyName}", new()
+        {
+            ConfigStoreName = configurationStore.Name,
+            KeyValueName = keyName,
+            ResourceGroupName = resourceGroup.Name,
+            ContentType = "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8",
+            
+            // Needs to be a json string like '{"uri": "[SecretUri]"}'
+            Value = secret.Properties.Apply(s => 
+                JsonSerializer.Serialize(new KeyVaultReferenceModel(s.SecretUri)))
+        });
+        
+    }
 }
