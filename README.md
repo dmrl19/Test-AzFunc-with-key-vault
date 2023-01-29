@@ -26,4 +26,4 @@ After Pulumi executed sucesfully, you need to go to the App Configuration resour
 ## How to delete
 
 Rememebr to delete verything or azure will start charging you, for it you can go again to the [Nuke folder](src/AzFunctionsWithKeyVault/Infrastructure/Base/Nuke/) and execute kinda the similar comand, but instead of `Up` you need to change it to `Destroy`. So your command to destroy the resources created by pulumi will be the following:
-`dotnet run -target Destroy --PULUMI_STATE_STORAGE_ACCOUNT_NAME [storageName] --PULUMI_STATE_STORAGE_KEY [StorageAccesKey] --STAGE [Stage] --PULUMI_PASSPHRASE [Passphrase]`. After it, execute the bash script [](src/AzFunctionsWithKeyVault/Scripts/cleanRequiredResources.sh) to delete the required resources created in the beginning.
+`dotnet run -target Destroy --PULUMI_STATE_STORAGE_ACCOUNT_NAME [storageName] --PULUMI_STATE_STORAGE_KEY [StorageAccesKey] --STAGE [Stage] --PULUMI_PASSPHRASE [Passphrase]`. After it, execute the bash script [CleanRequiredResources.sh](src/AzFunctionsWithKeyVault/Scripts/cleanRequiredResources.sh) to delete the required resources created in the beginning.
