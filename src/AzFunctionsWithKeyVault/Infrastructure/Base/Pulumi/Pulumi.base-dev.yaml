@@ -3,3 +3,5 @@ config:
   azure-native:location: WestEurope
   Sample.Infrastructure.Base.Pulumi:stage: dev
   Sample.Infrastructure.Base.Pulumi:location: WestEurope
+  Sample.Infrastructure.Base.Pulumi:keyVaultResourceGroupName: rg-kv-dmr-sample-dev
+  Sample.Infrastructure.Base.Pulumi:keyVaultName: kv-dmr-sample-dev

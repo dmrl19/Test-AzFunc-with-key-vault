@@ -24,24 +24,6 @@ jobs:
       working-directory: 'src/AzFunctionsWithKeyVault/build'
       run:  dotnet run -target Pack --ShouldSkipTests true
 
-  pulumi_preview:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    needs: [on_merged_build] # Needs that 'on_merged_build' finished before this run
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Install Pulumi CLI
-      uses: pulumi/setup-pulumi@v2
-
-    - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v3.0.3
-
-    - name: Execute Nuke
-      working-directory: 'src/AzFunctionsWithKeyVault/Infrastructure/Base/Nuke/Sample.Infrastructure.Base.Nuke'
-      run:  dotnet run -target Preview --PULUMI_STATE_STORAGE_ACCOUNT_NAME ${{ secrets.PULUMI_STATE_STORAGE_ACCOUNT_NAME }} --PULUMI_STATE_STORAGE_KEY ${{ secrets.PULUMI_STATE_STORAGE_KEY }} --STAGE $STAGE --PULUMI_PASSPHRASE ${{ secrets.PULUMI_PASSPHRASE}}
-
-
   on_pull_request:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
